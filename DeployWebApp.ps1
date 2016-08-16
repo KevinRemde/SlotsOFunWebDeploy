@@ -33,7 +33,7 @@ $rgName = "RG-WebAppDeploy-" + $init
 # Use these if you want to drive the deployment from Github-based template. 
 #
 # If the rawgit.com path is not available, you can try un-commenting the following line instead...
-$templateLocation = "https://raw.githubusercontent.com/tonysurma/BranchedWebSiteForDemos/master/templates/"
+$templateFileURI = "https://raw.githubusercontent.com/KevinRemde/SlotsOFunWebDeploy/master/azuredeploy.json"
 # $parameterFileURI = $assetLocation + "azuredeploy.parameters.json" # Use only if you want to use Kevin's defaults (not recommended)
 
 
@@ -44,65 +44,50 @@ $templateLocation = "https://raw.githubusercontent.com/tonysurma/BranchedWebSite
 # Those names are created by the template using randomly generated complex names, based on 
 # the resource group ID.
 
-$siteName = "kartestsite63"
-	
-$hostingPlanName = "kartestsiteplan"
+
+$siteName = "testsite" + $init
+$hostingPlanName = "testsiteplankar"
 $sku = "D1"
 $workerSize = "0"
-$repoURL = 
+$repoURL = "https://github.com/tonysurma/BranchedWebSiteForDemos.git"
+$branch = "master"
 
 # Populate the parameter object with parameter values for the azuredeploy.json template to use.
 
 $parameterObject = @{
-    "location" = "$loc"
-    "fileServerName" = "fileserver1" 
-    "fileServerDNSName" = $fileServerDNSVMName 
-    "fileServerSize" = "Standard_D1"
-    "webServerName" = "webserver1" 
-    "webServerDNSName" = $webServerDNSVMName 
-    "webServerSize" = "Standard_D1"
-    "vmUserName" = "demoAdmin"
-    "vmPassword" = "Passw0rd!"
-    "assetLocation" = $assetLocation
-}
+    "siteName" = $siteName
+    "hostingPlanName" = $hostingPlanName 
+    "sku" = $sku
+    "workerSize" = $workerSize
+    "repoURL" = $repoURL
+    "branch" = $branch
+    }
 
 
 
-# Create the resource group
+# Create the resource group if it doesn't exist
 
-New-AzureRMResourceGroup -Name $rgname -Location $loc
-
+New-AzureRmResourceGroup -Name $rgname -Location $loc -Force
+   
 # Build the lab machines. 
 # Note: takes approx. 30 minutes to complete.
 
 Write-Host ""
-Write-Host "Deploying the VMs.  This will take several minutes to complete."
+Write-Host "Deploying the site.  This will take several minutes to complete."
 Write-Host "Started at" (Get-Date -format T)
 Write-Host ""
 
 # THIS IS THE MAIN ONE YOU'LL launch to pull the template file from the repository, and use the created parameter object.
 Measure-Command -expression {New-AzureRMResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateFileURI -TemplateParameterObject $parameterObject}
 
-# use only if you want to use a local copy of the template file.
-# Measure-Command -expression {New-AzureRMResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile $templateFileLoc -TemplateParameterObject $parameterObject}
-
-# use only if you want to use Kevin's default parameters (not recommended)
-# New-AzureRMResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateFileURI -TemplateParameterUri $parameterFileURI
 
 Write-Host ""
 Write-Host "Completed at" (Get-Date -format T)
 
-
-# MORE EXAMPLES of what you may want to run later...
-
-# Shut down all lab VMs in the Resource Group when you're not using them.
-# Get-AzureRmVM -ResourceGroupName $rgName | Stop-AzureRmVM -Force
-
-# Restart them when you're continuing the lab.
-# Get-AzureRmVM -ResourceGroupName $rgName | Start-AzureRmVM 
-
-
 # Delete the entire resource group (and all of its VMs and other objects).
 # Remove-AzureRmResourceGroup -Name $rgName -Force
+
+
+
 
 

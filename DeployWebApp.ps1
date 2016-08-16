@@ -45,12 +45,12 @@ $templateFileURI = "https://raw.githubusercontent.com/KevinRemde/SlotsOFunWebDep
 # the resource group ID.
 
 
-$siteName = "testsite" + $init
+$siteName = "testsitedev" 
 $hostingPlanName = "testsiteplankar"
 $sku = "D1"
 $workerSize = "0"
 $repoURL = "https://github.com/tonysurma/BranchedWebSiteForDemos.git"
-$branch = "master"
+$branch = "dev"
 
 # Populate the parameter object with parameter values for the azuredeploy.json template to use.
 
